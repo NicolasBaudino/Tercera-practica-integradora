@@ -1,0 +1,3 @@
+{"level":"warning","message":"Warn logger test"}
+{"level":"error","message":"Error logger test"}
+{"level":"fatal","message":"Fatal logger test"}
