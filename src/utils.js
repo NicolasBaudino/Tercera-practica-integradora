@@ -4,16 +4,18 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import passport from "passport";
 import { faker } from "@faker-js/faker";
+import nodemailer from "nodemailer";
+import config from "./config/config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
-export const isValidPas = (user, password) => {
-    console.log(`User-password: ${user.password}, password: ${password}`);
-    return bcrypt.compareSync(password, user.password);
-}
+export const isValidPas = (accountPassword, passwordLogin) => {
+  const isValid = bcrypt.compare(passwordLogin, accountPassword);
+  return isValid;
+};
 
 
 // jwt
@@ -107,5 +109,15 @@ export const generateFakeProduct = (
   };
 };
 
+// nodemailer
+
+export const transporter = nodemailer.createTransport({
+  service: "gmail",
+  port: 587,
+  auth: {
+    user: config.userMail,
+    pass: config.userPassword,
+  },
+});
 
 export default __dirname;

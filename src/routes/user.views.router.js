@@ -13,6 +13,18 @@ router.get("/register", (req, res) => {
     res.render("register.hbs");
 });
 
+router.get("/send-email-to-recover", async (req, res) => {
+    res.render("sendEmail.hbs");
+});
+
+router.get("/new-password/:token", async (req, res) => {
+    const { token } = req.params;
+  
+    res.render("newPassword.hbs", {
+      token
+    });
+});
+
 // passport.authenticate('jwt', {session: false})
 // authorization("admin")
 router.get("/", passportCall('jwt'), (req,res)=>{

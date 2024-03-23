@@ -28,6 +28,8 @@ const config = {
   urlMongo: process.env.MONGO_URL,
   adminName: process.env.ADMIN_NAME,
   adminPassword: process.env.ADMIN_PASSWORD,
+  userMail: process.env.USER_MAIL,
+  userPassword: process.env.USER_PASSWORD
 };
 
 export default config;
