@@ -5,6 +5,7 @@ import { productService } from "../services/service.js";
 import CustomError from "../services/errors/customError.js";
 import { generateProductErrorInfo } from "../services/errors/infoError.js";
 import { EErrors } from "../services/errors/enumsError.js";
+import { authToken } from "../utils.js";
 
 export const getProductsController = async (req, res) => {
     const { limit, page, sort, query } = req.query;
@@ -36,7 +37,6 @@ export const addProductController = async (req, res) => {
         product.thumbnails === undefined ||
         product.category === undefined ||
         product.code === undefined ||
-        product.status === undefined ||
         product.stock === undefined
       ) {
         CustomError.createError({
@@ -81,17 +81,26 @@ export const updateProductController = async (req, res) => {
     }
 };
 
-export const deleteProductController = async (req, res) => {
-    const { pid } = req.params;
-  
-    try {
+export const deleteProductController = [authToken, async (req, res) => {
+  const { pid } = req.params;
+  try {
+      const product = await productService.findProductById(pid);
+      if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+      }
+
+      if (req.user.role !== "admin" && req.user.email !== product.owner) {
+          return res.status(403).json({ message: "Forbidden: user doesn't have permission to delete this product." });
+      }
+
       await productService.deleteProducts(pid);
       res.status(200).json({
-        message: "Content successfully deleted!",
+          message: "Content successfully deleted!",
       });
-    } catch (error) {
+  } catch (error) {
+      console.error(error);
       res.status(400).json({
-        error: error.message,
+          error: error.message,
       });
-    }
-};
+  }
+}];

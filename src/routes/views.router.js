@@ -38,5 +38,4 @@ router.get("/chat", passportCall('jwt'), hasUserPermission(), async (req, res) =
 });
 
 
-
 export default router;

@@ -4,6 +4,7 @@ import { cartService, ticketService, productService } from "../services/service.
 import TicketDto from "../services/dto/ticket.dto.js";
 import { cartModel } from "../models/cart.model.js";
 import { productModel } from "../models/product.model.js";
+import { authToken } from "../utils.js";
 
 export const getCartsController = async (req, res) => {
     try {
@@ -71,18 +72,26 @@ export const deleteCartByCartIdController = async (req, res) => {
     }
 };
 
-export const addProductByCartIdController = async (req, res) => {
+export const addProductByCartIdController = [authToken, async (req, res) => {
     const { cid, pid } = req.params;
     try {
-        const result = await cartService.addProductCart(cid, pid);
-        res.json({
-            result,
-            message: "Product added"
-        });
+      const product = await productService.findProductById(pid);
+      if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+      }
+      if (req.user.role == "premium" && req.user.email == product.owner) {
+        return res.status(403).json({ message: "Forbidden: premiums doesn't have the permission to add his own product to cart." });
+      }
+      
+      const result = await cartService.addProductCart(cid, pid);
+      res.json({
+          result,
+          message: "Product added"
+      });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-};
+}];
 
 export const updateQuantityProductController = async (req, res) => {
     const { cid, pid } = req.params;

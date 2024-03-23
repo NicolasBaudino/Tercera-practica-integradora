@@ -24,7 +24,7 @@ router.post("/login", async (req, res) => {
             console.log("Admin token: " + access_token);
             res.cookie('jwtCookieToken', access_token,
                 {
-                    maxAge: 60000,
+                    maxAge: 600000,
                     httpOnly: true
                 }
             )
